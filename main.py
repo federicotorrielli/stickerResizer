@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
+import threading
 from os import listdir, makedirs, remove
 from os.path import isfile, join, splitext, basename, exists
 from PIL import Image
 from resizeimage import resizeimage, imageexceptions
 from termcolor import colored
+
+
+def divide_in_chunks(ls, n):
+    n = max(1, n)
+    return (ls[i:i + n] for i in range(0, len(ls), n))
 
 
 def check_folder_forjpg():
@@ -14,6 +20,10 @@ def check_folder_forjpg():
 def check_folder_forpng():
     onlypngfiles = [f for f in listdir() if isfile(join(".", f)) and f.endswith(".png")]
     return onlypngfiles
+
+
+def retrieve_images():
+    return check_folder_forpng(), check_folder_forjpg()
 
 
 def convert_to_png(jpg_list):
@@ -45,17 +55,24 @@ def remove_temp_files(png_trash):
         remove(elem)
 
 
+def multithreaded_resizer(image_list):
+    lists = divide_in_chunks(image_list, 3)
+    for sublist in lists:
+        tn = threading.Thread(target=resize_image, args=(sublist,))
+        tn.start()
+        tn.join()
+
+
 if __name__ == '__main__':
-    jpgs = check_folder_forjpg()
-    old_pngs = check_folder_forpng()
+    old_pngs, jpgs = retrieve_images()
     if len(jpgs) > 0 or len(old_pngs) > 0:
-        print(f"The following images will be converted and resized: {jpgs}")
-        print(f"The following images will be resized only: {old_pngs}")
+        print(colored(f"The following images will be converted and resized: {jpgs}", 'yellow'))
+        print(colored(f"The following images will be resized only: {old_pngs}", 'yellow'))
         if input(colored("Are you sure you want to continue?", 'green') + " [y,N] ").lower() == 'y':
             convert_to_png(jpgs)
             pngs = check_folder_forpng()
             only_new_pngs = [elem for elem in pngs if elem not in old_pngs]
-            resize_image(pngs)
+            multithreaded_resizer(pngs)
             remove_temp_files(only_new_pngs)
             print(colored("Done! You will find all your resized images in the Results folder.", 'green'))
         else:
