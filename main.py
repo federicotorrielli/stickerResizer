@@ -30,7 +30,7 @@ def resize_image(images_list):
                     cover = resizeimage.resize_height(image, 512)
                     cover.save(splitext(basename(image_file))[0] + '.png', image.format)
                 except imageexceptions.ImageSizeError:
-                    print(colored(f"Image {image_file} is too small to be converted!", 'red'))
+                    print(colored(f"Image {image_file} is too small to be resized!", 'red'))
 
 
 if __name__ == '__main__':
