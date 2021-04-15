@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-from os import listdir
-from os.path import isfile, join, splitext, basename
+from os import listdir, makedirs, remove
+from os.path import isfile, join, splitext, basename, exists
 from PIL import Image
 from resizeimage import resizeimage, imageexceptions
 from termcolor import colored
@@ -22,15 +22,27 @@ def convert_to_png(jpg_list):
         conv.save(splitext(basename(image))[0] + '.png')
 
 
+def save_files(cover, image_path, image):
+    directory = "Results"
+    if not exists(directory):
+        makedirs(directory)
+    cover.save(directory + '/' + splitext(basename(image_path))[0] + '.png', image.format)
+
+
 def resize_image(images_list):
     for image_file in images_list:
         with open(image_file, 'r+b') as f:
             with Image.open(f) as image:
                 try:
                     cover = resizeimage.resize_height(image, 512)
-                    cover.save(splitext(basename(image_file))[0] + '.png', image.format)
+                    save_files(cover, image_file, image)
                 except imageexceptions.ImageSizeError:
                     print(colored(f"Image {image_file} is too small to be resized!", 'red'))
+
+
+def remove_temp_files(png_trash):
+    for elem in png_trash:
+        remove(elem)
 
 
 if __name__ == '__main__':
@@ -42,7 +54,10 @@ if __name__ == '__main__':
         if input(colored("Are you sure you want to continue?", 'green') + " [y,N] ").lower() == 'y':
             convert_to_png(jpgs)
             pngs = check_folder_forpng()
+            only_new_pngs = [elem for elem in pngs if elem not in old_pngs]
             resize_image(pngs)
+            remove_temp_files(only_new_pngs)
+            print(colored("Done! You will find all your resized images in the Results folder.", 'green'))
         else:
             print(colored("Operation aborted.", 'yellow'))
     else:
