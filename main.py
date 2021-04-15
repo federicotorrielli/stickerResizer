@@ -35,10 +35,15 @@ def resize_image(images_list):
 
 if __name__ == '__main__':
     jpgs = check_folder_forjpg()
-    print(f"The following images will be converted and resized: {jpgs}")
-    if input(colored("Are you sure you want to continue?", 'green') + " [y,N] ").lower() == 'y':
-        convert_to_png(jpgs)
-        pngs = check_folder_forpng()
-        resize_image(pngs)
+    old_pngs = check_folder_forpng()
+    if len(jpgs) > 0 or len(old_pngs) > 0:
+        print(f"The following images will be converted and resized: {jpgs}")
+        print(f"The following images will be resized only: {old_pngs}")
+        if input(colored("Are you sure you want to continue?", 'green') + " [y,N] ").lower() == 'y':
+            convert_to_png(jpgs)
+            pngs = check_folder_forpng()
+            resize_image(pngs)
+        else:
+            print(colored("Operation aborted.", 'yellow'))
     else:
-        print(colored("Operation aborted.", 'yellow'))
+        print(colored("There are no available pictures to convert or resize in this folder.", 'red'))
