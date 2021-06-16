@@ -51,7 +51,7 @@ def resize_image(images_list):
                         cover = resizeimage.resize_width(image, 512)
                     save_files(cover, image_file, image)
                 except imageexceptions.ImageSizeError:
-                    print(colored(f"Image {image_file} is too small to be resized!", 'red'))
+                    print(colored(f"Image {image_file} is too small to be resized! ({width}x{height})", 'red'))
 
 
 def remove_temp_files(png_trash):
