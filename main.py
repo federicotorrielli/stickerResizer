@@ -44,7 +44,11 @@ def resize_image(images_list):
         with open(image_file, 'r+b') as f:
             with Image.open(f) as image:
                 try:
-                    cover = resizeimage.resize_height(image, 512)
+                    width, height = image.size
+                    if height >= width:
+                        cover = resizeimage.resize_height(image, 512)
+                    else:
+                        cover = resizeimage.resize_width(image, 512)
                     save_files(cover, image_file, image)
                 except imageexceptions.ImageSizeError:
                     print(colored(f"Image {image_file} is too small to be resized!", 'red'))
