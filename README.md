@@ -9,13 +9,13 @@ for you here to ease your life.
 
 ## Requirements
 
-- Python (3.4+)
+- Python (3.6+)
 - pip
 - A working brain
 
 ## How-to
 
-### First, do a backup
+### Do a backup!
 
 I don't care if you will lose all your original images or not, just copy them in the folder.
 
